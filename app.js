@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
 
-import userRoutes from './routes/User.js';
+import secretRoutes from './routes/User.js';
 
 const app = express();
 dotenv.config();
@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({
   extended: true 
 }));
 
-app.use('/', userRoutes);
+app.use('/', secretRoutes);
 
 mongoose.set('strictQuery', false);
 mongoose.connect("mongodb://localhost:27017/userDB", { useNewUrlParser: true })
