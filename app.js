@@ -1,8 +1,11 @@
 import express from "express";
+import dotenv from 'dotenv';
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
-import dotenv from 'dotenv';
+import session from 'express-session';
+import passport from 'passport';
 
+import User from './models/User.js';
 import secretRoutes from './routes/User.js';
 
 const app = express();
@@ -13,6 +16,15 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ 
   extended: true 
 }));
+
+app.use(session({
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', secretRoutes);
 
