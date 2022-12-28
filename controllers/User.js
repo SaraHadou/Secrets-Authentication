@@ -1,14 +1,45 @@
+import dotenv from 'dotenv';
 import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
 import User from '../models/User.js';
 
+dotenv.config();
+
 passport.use(User.createStrategy());
 
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+passport.serializeUser(function(User, done) {
+  done(null, User.id); 
+});
+
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, User) {
+    done(err, User);
+  });
+});
+
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/auth/google/secrets"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    console.log(profile);
+    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+      return cb(err, user);
+    });
+  }
+));
 
 export const getHomePage = (req, res) => {
   res.render("home");
+};
+
+export const authGoogle = passport.authenticate("google", { scope: ['profile'] });
+
+export const authGoogleFailure = passport.authenticate('google', { failureRedirect: "/login" });
+export const authGoogleGetSecrets =  (req, res) => {
+  res.redirect('/secrets');
 };
 
 export const register = (req, res) => {

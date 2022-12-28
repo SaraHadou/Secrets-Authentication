@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 import session from 'express-session';
 import passport from 'passport';
 
-import User from './models/User.js';
 import secretRoutes from './routes/User.js';
 
 const app = express();
