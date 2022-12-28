@@ -8,12 +8,12 @@ dotenv.config();
 
 passport.use(User.createStrategy());
 
-passport.serializeUser(function(User, done) {
+passport.serializeUser(function (User, done) {
   done(null, User.id); 
 });
 
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, User) {
+passport.deserializeUser(function (id, done) {
+  User.findById(id, function (err, User) {
     done(err, User);
   });
 });
@@ -38,6 +38,7 @@ export const getHomePage = (req, res) => {
 export const authGoogle = passport.authenticate("google", { scope: ['profile'] });
 
 export const authGoogleFailure = passport.authenticate('google', { failureRedirect: "/login" });
+
 export const authGoogleGetSecrets =  (req, res) => {
   res.redirect('/secrets');
 };
@@ -60,12 +61,41 @@ export const logout = (req, res) => {
 };
 
 export const getSecrets = (req, res) => {
+  User.find({ "secret": { $ne: null } }, (err, foundUsers) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (foundUsers) {
+        res.render("secrets", {usersWithSecrets: foundUsers});
+      }
+    }
+  });
+};
+
+export const submit = (req, res) => {
   if (req.isAuthenticated()) {
-    res.render("secrets");
+    res.render("submit");
   } else {
     res.redirect('/login');
   }
 };
+
+export const postSecret = (req, res) => {
+  const submittedSecret = req.body.secret;
+  User.findById(req.user.id, (err, foundUser) => {
+    if (err) {
+      console.log(err);
+    } else {
+      if (foundUser) {
+        foundUser.secret = submittedSecret;
+        foundUser.save(() => {
+          res.redirect('/secrets');
+        }); 
+      }
+    }
+  });
+ };
+
 
 export const createUser = (req, res) => {
   User.register({ username: req.body.username }, req.body.password, (err, user) => {

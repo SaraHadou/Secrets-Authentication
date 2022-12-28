@@ -1,6 +1,6 @@
 import express from "express";
 
-import { getHomePage,  register, login, logout, getSecrets, createUser, loginUser } from '../controllers/User.js';
+import { getHomePage, register, login, logout, getSecrets, submit, postSecret, createUser, loginUser } from '../controllers/User.js';
 import { authGoogle, authGoogleFailure, authGoogleGetSecrets } from '../controllers/User.js';
 
 const router = express.Router();
@@ -12,6 +12,8 @@ router.get("/register", register);
 router.get("/login", login);
 router.get("/logout", logout);
 router.get("/secrets", getSecrets);
+router.get("/submit", submit);
+router.post("/submit", postSecret);
 router.post("/register", createUser);
 router.post("/login", loginUser);
 
